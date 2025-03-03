@@ -25,8 +25,8 @@ export default function NavBar() {
   return (
     <nav className="border-b bg-card">
       <div className="container flex h-16 items-center px-4">
-        <div className="mr-8 flex items-center gap-2">
-          <Trophy className="h-6 w-6 text-primary" />
+        <div className="mr-8 flex items-center gap-2 hover-scale">
+          <Trophy className="h-6 w-6 text-primary animate-pulse" />
           <span className="text-xl font-bold">TokenUp</span>
         </div>
 
@@ -34,10 +34,10 @@ export default function NavBar() {
           {navItems.map(({ href, icon: Icon, label }) => (
             <Link key={href} href={href}>
               <a
-                className={`flex items-center space-x-2 ${
+                className={`flex items-center space-x-2 transition-all duration-200 hover:text-primary ${
                   location === href
-                    ? "text-primary font-medium"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-primary font-medium scale-105"
+                    : "text-muted-foreground hover:scale-105"
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -48,13 +48,14 @@ export default function NavBar() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium">
+          <span className="text-sm font-medium bg-primary/10 px-3 py-1 rounded-full">
             {user.totalTokens} Tokens
           </span>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => logoutMutation.mutate()}
+            className="hover:rotate-180 transition-transform duration-300"
           >
             <LogOut className="h-4 w-4" />
           </Button>
