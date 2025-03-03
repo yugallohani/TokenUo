@@ -10,6 +10,8 @@ import ProfileCard from "@/components/profile/profile-card";
 import CertificateCard from "@/components/certificates/certificate-card";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CERTIFICATE_TYPES } from "@shared/schema";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -17,8 +19,8 @@ export default function ProfilePage() {
 
   const { data: certificates, isLoading } = useQuery<Certificate[]>({
     queryKey: ["/api/certificates", user?.id],
-    queryFn: () => 
-      fetch(`/api/certificates?userId=${user?.id}`).then(r => r.json()),
+    queryFn: () =>
+      fetch(`/api/certificates?userId=${user?.id}`).then((r) => r.json()),
   });
 
   if (isLoading) {
@@ -34,13 +36,14 @@ export default function ProfilePage() {
   const handleCertificateUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     try {
       await apiRequest("POST", "/api/certificates", {
         title: formData.get("title"),
         issuer: formData.get("issuer"),
         imageUrl: formData.get("imageUrl"),
         description: formData.get("description"),
+        certificateType: formData.get("certificateType"),
       });
 
       toast({
@@ -63,7 +66,7 @@ export default function ProfilePage() {
       <div className="grid gap-8 md:grid-cols-[300px,1fr]">
         <div className="space-y-6">
           <ProfileCard user={user!} />
-          
+
           <Card>
             <CardHeader>
               <h3 className="text-lg font-semibold">Upload Certificate</h3>
@@ -74,17 +77,33 @@ export default function ProfilePage() {
                   <Label htmlFor="title">Title</Label>
                   <Input id="title" name="title" required />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="issuer">Issuer</Label>
                   <Input id="issuer" name="issuer" required />
                 </div>
-                
+
+                <div className="space-y-2">
+                  <Label htmlFor="certificateType">Certificate Type</Label>
+                  <Select name="certificateType" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select certificate type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(CERTIFICATE_TYPES).map(([key, { label, value }]) => (
+                        <SelectItem key={key} value={key}>
+                          {label} ({value} tokens)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="imageUrl">Certificate Image URL</Label>
                   <Input id="imageUrl" name="imageUrl" required />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
                   <Input id="description" name="description" required />
@@ -101,11 +120,7 @@ export default function ProfilePage() {
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold">Your Certificates</h2>
           {certificates.map((cert) => (
-            <CertificateCard 
-              key={cert.id} 
-              certificate={cert} 
-              user={user!} 
-            />
+            <CertificateCard key={cert.id} certificate={cert} user={user!} />
           ))}
         </div>
       </div>

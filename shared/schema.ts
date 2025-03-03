@@ -2,6 +2,32 @@ import { pgTable, text, serial, integer, timestamp, boolean } from "drizzle-orm/
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const CERTIFICATE_TYPES = {
+  NPTEL: { value: 2, label: "NPTEL Course" },
+  STATE_COMPETITION: { value: 3, label: "State Level Competition" },
+  NATIONAL_COMPETITION: { value: 4, label: "National Level Competition" },
+  INTERNATIONAL_COMPETITION: { value: 5, label: "International Competition" },
+  COURSERA: { value: 2, label: "Coursera Course" },
+  UDEMY: { value: 1, label: "Udemy Course" },
+  INTERNSHIP: { value: 3, label: "Internship Completion" },
+  WORKSHOP: { value: 1, label: "Workshop Participation" },
+  HACKATHON: { value: 2, label: "Hackathon Achievement" },
+  RESEARCH_PAPER: { value: 4, label: "Research Paper Publication" },
+} as const;
+
+export const certificateTypeSchema = z.enum([
+  "NPTEL",
+  "STATE_COMPETITION",
+  "NATIONAL_COMPETITION",
+  "INTERNATIONAL_COMPETITION",
+  "COURSERA",
+  "UDEMY",
+  "INTERNSHIP",
+  "WORKSHOP",
+  "HACKATHON",
+  "RESEARCH_PAPER"
+]);
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -19,6 +45,7 @@ export const certificates = pgTable("certificates", {
   issuer: text("issuer").notNull(),
   imageUrl: text("image_url").notNull(),
   description: text("description"),
+  certificateType: text("certificate_type").notNull(),
   tokenValue: integer("token_value").notNull(),
   isVerified: boolean("is_verified").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -32,12 +59,16 @@ export const insertUserSchema = createInsertSchema(users).pick({
   bio: true,
 });
 
-export const insertCertificateSchema = createInsertSchema(certificates).pick({
-  title: true,
-  issuer: true,
-  imageUrl: true,
-  description: true,
-});
+export const insertCertificateSchema = createInsertSchema(certificates)
+  .pick({
+    title: true,
+    issuer: true,
+    imageUrl: true,
+    description: true,
+  })
+  .extend({
+    certificateType: certificateTypeSchema,
+  });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;

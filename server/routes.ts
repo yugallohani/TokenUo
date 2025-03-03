@@ -4,6 +4,12 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertCertificateSchema } from "@shared/schema";
 
+const CERTIFICATE_TYPES = {
+  TYPE_A: { value: 10 },
+  TYPE_B: { value: 20 },
+  TYPE_C: { value: 30 },
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
 
@@ -15,20 +21,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/certificates", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const data = insertCertificateSchema.parse(req.body);
+    const tokenValue = CERTIFICATE_TYPES[data.certificateType as keyof typeof CERTIFICATE_TYPES].value;
+
     const cert = await storage.createCertificate({
       ...data,
       userId: req.user.id,
       isVerified: false,
-      tokenValue: 2, // Default token value
+      tokenValue,
     });
     res.status(201).json(cert);
   });
 
   app.post("/api/certificates/:id/verify", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     const cert = await storage.verifyCertificate(Number(req.params.id));
     await storage.updateUserTokens(cert.userId, cert.tokenValue);
     res.json(cert);

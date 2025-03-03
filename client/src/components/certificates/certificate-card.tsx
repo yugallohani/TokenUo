@@ -1,8 +1,9 @@
-import { Certificate, User } from "@shared/schema";
+import { Certificate, User, CERTIFICATE_TYPES } from "@shared/schema";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
+import { Trophy } from "lucide-react";
 
 interface CertificateCardProps {
   certificate: Certificate;
@@ -10,6 +11,8 @@ interface CertificateCardProps {
 }
 
 export default function CertificateCard({ certificate, user }: CertificateCardProps) {
+  const certificateTypeInfo = CERTIFICATE_TYPES[certificate.certificateType as keyof typeof CERTIFICATE_TYPES];
+
   return (
     <Card className="w-full">
       <CardHeader className="flex-row space-y-0 gap-4">
@@ -24,7 +27,17 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
               {formatDistanceToNow(new Date(certificate.createdAt), { addSuffix: true })}
             </time>
           </div>
-          <span className="text-sm text-muted-foreground">earned a new certificate</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">earned a new certificate</span>
+            {certificate.isVerified && (
+              <div className="flex items-center gap-1 text-green-600">
+                <Trophy className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  +{certificate.tokenValue} tokens rewarded!
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -38,13 +51,20 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
         <div className="space-y-2">
           <h3 className="font-semibold">{certificate.title}</h3>
           <p className="text-sm text-muted-foreground">{certificate.description}</p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant="outline">
               {certificate.issuer}
             </Badge>
-            {certificate.isVerified && (
+            <Badge variant="outline" className="bg-primary/10">
+              {certificateTypeInfo.label} ({certificateTypeInfo.value} tokens)
+            </Badge>
+            {certificate.isVerified ? (
               <Badge variant="default" className="bg-green-600">
-                Verified (+{certificate.tokenValue} tokens)
+                Verified
+              </Badge>
+            ) : (
+              <Badge variant="default" className="bg-yellow-500">
+                Pending Verification
               </Badge>
             )}
           </div>
