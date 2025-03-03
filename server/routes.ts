@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertCertificateSchema, CERTIFICATE_TYPES } from "@shared/schema";
+import { insertCertificateSchema, insertCommentSchema, CERTIFICATE_TYPES } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -44,6 +44,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
       certificate: cert,
       user: updatedUser
     });
+  });
+
+  app.post("/api/certificates/:id/like", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    await storage.likeCertificate(req.user.id, Number(req.params.id));
+    res.sendStatus(200);
+  });
+
+  app.delete("/api/certificates/:id/like", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    await storage.unlikeCertificate(req.user.id, Number(req.params.id));
+    res.sendStatus(200);
+  });
+
+  app.get("/api/certificates/:id/likes", async (req, res) => {
+    const likes = await storage.getLikes(Number(req.params.id));
+    res.json(likes);
+  });
+
+  app.get("/api/certificates/:id/hasLiked", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    const hasLiked = await storage.hasLiked(req.user.id, Number(req.params.id));
+    res.json({ hasLiked });
+  });
+
+  app.get("/api/certificates/:id/comments", async (req, res) => {
+    const comments = await storage.getComments(Number(req.params.id));
+    const users = await Promise.all(
+      comments.map(comment => storage.getUser(comment.userId))
+    );
+
+    res.json(comments.map((comment, i) => ({
+      ...comment,
+      user: users[i],
+    })));
+  });
+
+  app.post("/api/certificates/:id/comments", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+
+    const data = insertCommentSchema.parse(req.body);
+    const comment = await storage.addComment(
+      req.user.id,
+      Number(req.params.id),
+      data.content
+    );
+
+    const user = await storage.getUser(comment.userId);
+    res.status(201).json({ ...comment, user });
   });
 
   app.get("/api/leaderboard", async (_req, res) => {

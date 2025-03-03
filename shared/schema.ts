@@ -49,6 +49,23 @@ export const certificates = pgTable("certificates", {
   tokenValue: integer("token_value").notNull(),
   isVerified: boolean("is_verified").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  likesCount: integer("likes_count").default(0).notNull(),
+  commentsCount: integer("comments_count").default(0).notNull(),
+});
+
+export const likes = pgTable("likes", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  certificateId: integer("certificate_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  certificateId: integer("certificate_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -70,6 +87,12 @@ export const insertCertificateSchema = createInsertSchema(certificates)
     certificateType: certificateTypeSchema,
   });
 
+export const insertCommentSchema = createInsertSchema(comments).pick({
+  content: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Certificate = typeof certificates.$inferSelect;
+export type Comment = typeof comments.$inferSelect;
+export type Like = typeof likes.$inferSelect;
