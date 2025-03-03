@@ -33,8 +33,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 
     const cert = await storage.verifyCertificate(Number(req.params.id));
-    await storage.updateUserTokens(cert.userId, cert.tokenValue);
-    res.json(cert);
+    const updatedUser = await storage.updateUserTokens(cert.userId, cert.tokenValue);
+
+    // Update the user session with new token count
+    if (req.user.id === updatedUser.id) {
+      req.user.totalTokens = updatedUser.totalTokens;
+    }
+
+    res.json({
+      certificate: cert,
+      user: updatedUser
+    });
   });
 
   app.get("/api/leaderboard", async (_req, res) => {

@@ -2,8 +2,12 @@ import { Certificate, User, CERTIFICATE_TYPES } from "@shared/schema";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { Trophy } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface CertificateCardProps {
   certificate: Certificate;
@@ -11,7 +15,33 @@ interface CertificateCardProps {
 }
 
 export default function CertificateCard({ certificate, user }: CertificateCardProps) {
+  const { toast } = useToast();
   const certificateTypeInfo = CERTIFICATE_TYPES[certificate.certificateType as keyof typeof CERTIFICATE_TYPES];
+
+  const verifyMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/certificates/${certificate.id}/verify`);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      // Invalidate and refetch affected queries
+      queryClient.invalidateQueries({ queryKey: ["/api/certificates"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/leaderboard"] });
+      queryClient.setQueryData(["/api/user"], data.user);
+
+      toast({
+        title: "Certificate Verified",
+        description: `${data.certificate.tokenValue} tokens have been awarded!`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Verification Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   return (
     <Card className="w-full">
@@ -63,9 +93,18 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
                 Verified
               </Badge>
             ) : (
-              <Badge variant="default" className="bg-yellow-500">
-                Pending Verification
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="default" className="bg-yellow-500">
+                  Pending Verification
+                </Badge>
+                <Button
+                  size="sm"
+                  onClick={() => verifyMutation.mutate()}
+                  disabled={verifyMutation.isPending}
+                >
+                  Verify Now
+                </Button>
+              </div>
             )}
           </div>
         </div>
