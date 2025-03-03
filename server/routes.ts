@@ -103,6 +103,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(users);
   });
 
+  app.get("/api/analytics", async (_req, res) => {
+    const certificates = await storage.getCertificates();
+    const users = await storage.getTopUsers(1000); // Get all users for analytics
+
+    // Certificate type distribution
+    const certificateTypeDistribution = Object.entries(CERTIFICATE_TYPES).map(([type]) => ({
+      type,
+      count: certificates.filter(cert => cert.certificateType === type).length
+    })).filter(item => item.count > 0);
+
+    // Token distribution ranges
+    const tokenRanges = [
+      { min: 0, max: 10, label: "0-10" },
+      { min: 11, max: 20, label: "11-20" },
+      { min: 21, max: 30, label: "21-30" },
+      { min: 31, max: 50, label: "31-50" },
+      { min: 51, max: Infinity, label: "50+" }
+    ];
+
+    const tokenDistribution = tokenRanges.map(range => ({
+      range: range.label,
+      count: users.filter(user =>
+        user.totalTokens >= range.min && user.totalTokens <= range.max
+      ).length
+    }));
+
+    // Daily activity for the last 7 days
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      return date.toISOString().split('T')[0];
+    }).reverse();
+
+    const dailyActivity = last7Days.map(date => {
+      const dayStart = new Date(date);
+      const dayEnd = new Date(date);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+
+      return {
+        date,
+        certificates: certificates.filter(cert =>
+          new Date(cert.createdAt) >= dayStart && new Date(cert.createdAt) < dayEnd
+        ).length,
+        verifications: certificates.filter(cert =>
+          cert.isVerified && new Date(cert.createdAt) >= dayStart && new Date(cert.createdAt) < dayEnd
+        ).length
+      };
+    });
+
+    // Total statistics
+    const totalStats = {
+      totalCertificates: certificates.length,
+      verifiedCertificates: certificates.filter(cert => cert.isVerified).length,
+      totalTokensAwarded: users.reduce((sum, user) => sum + user.totalTokens, 0),
+      activeUsers: users.filter(user => user.totalTokens > 0).length
+    };
+
+    res.json({
+      certificateTypeDistribution,
+      tokenDistribution,
+      dailyActivity,
+      totalStats
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

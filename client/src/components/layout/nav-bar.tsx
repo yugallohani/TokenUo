@@ -7,6 +7,7 @@ import {
   LogOut,
   UserCircle,
   Home,
+  ChartBar
 } from "lucide-react";
 
 export default function NavBar() {
@@ -18,6 +19,7 @@ export default function NavBar() {
   const navItems = [
     { href: "/", icon: Home, label: "Feed" },
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/analytics", icon: ChartBar, label: "Analytics" },
     { href: "/leaderboard", icon: Trophy, label: "Leaderboard" },
     { href: "/profile", icon: UserCircle, label: "Profile" },
   ];

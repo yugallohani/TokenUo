@@ -12,6 +12,7 @@ import ProfilePage from "@/pages/profile-page";
 import LeaderboardPage from "@/pages/leaderboard-page";
 import NotFound from "@/pages/not-found";
 import NavBar from "@/components/layout/nav-bar";
+import AnalyticsPage from "@/pages/analytics-page"; // Added import
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
         <ProtectedRoute path="/dashboard" component={DashboardPage} />
         <ProtectedRoute path="/profile" component={ProfilePage} />
         <ProtectedRoute path="/leaderboard" component={LeaderboardPage} />
+        <ProtectedRoute path="/analytics" component={AnalyticsPage} /> {/* Added route */}
         <Route component={NotFound} />
       </Switch>
     </div>
