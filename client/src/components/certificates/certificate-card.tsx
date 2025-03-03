@@ -11,9 +11,9 @@ interface CertificateCardProps {
 
 export default function CertificateCard({ certificate, user }: CertificateCardProps) {
   return (
-    <Card className="w-full hover-lift slide-in">
+    <Card className="w-full">
       <CardHeader className="flex-row space-y-0 gap-4">
-        <Avatar className="hover-scale">
+        <Avatar>
           <AvatarImage src={user.avatar} />
           <AvatarFallback>{user.name[0]}</AvatarFallback>
         </Avatar>
@@ -28,22 +28,22 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="relative aspect-video rounded-lg overflow-hidden hover-scale">
+        <div className="relative aspect-video rounded-lg overflow-hidden">
           <img
             src={certificate.imageUrl}
             alt={certificate.title}
-            className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+            className="object-cover w-full h-full"
           />
         </div>
         <div className="space-y-2">
           <h3 className="font-semibold">{certificate.title}</h3>
           <p className="text-sm text-muted-foreground">{certificate.description}</p>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="hover-scale">
+            <Badge variant="outline">
               {certificate.issuer}
             </Badge>
             {certificate.isVerified && (
-              <Badge variant="default" className="bg-green-600 hover-scale">
+              <Badge variant="default" className="bg-green-600">
                 Verified (+{certificate.tokenValue} tokens)
               </Badge>
             )}
