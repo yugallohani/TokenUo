@@ -20,7 +20,7 @@ export default function ProfileCard({ user, rank }: ProfileCardProps) {
         )}
         <div className="flex flex-col items-center space-y-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={user.avatar} />
+            <AvatarImage src={user.avatar || ""} />
             <AvatarFallback className="text-xl">{user.name[0]}</AvatarFallback>
           </Avatar>
           <div className="text-center">

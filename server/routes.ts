@@ -2,13 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertCertificateSchema } from "@shared/schema";
-
-const CERTIFICATE_TYPES = {
-  TYPE_A: { value: 10 },
-  TYPE_B: { value: 20 },
-  TYPE_C: { value: 30 },
-};
+import { insertCertificateSchema, CERTIFICATE_TYPES } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -23,7 +17,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 
     const data = insertCertificateSchema.parse(req.body);
-    const tokenValue = CERTIFICATE_TYPES[data.certificateType as keyof typeof CERTIFICATE_TYPES].value;
+    const certificateType = data.certificateType as keyof typeof CERTIFICATE_TYPES;
+    const tokenValue = CERTIFICATE_TYPES[certificateType].value;
 
     const cert = await storage.createCertificate({
       ...data,

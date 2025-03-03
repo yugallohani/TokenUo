@@ -17,7 +17,7 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
     <Card className="w-full">
       <CardHeader className="flex-row space-y-0 gap-4">
         <Avatar>
-          <AvatarImage src={user.avatar} />
+          <AvatarImage src={user.avatar || ""} />
           <AvatarFallback>{user.name[0]}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col flex-1">
