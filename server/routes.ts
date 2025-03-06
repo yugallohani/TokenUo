@@ -32,23 +32,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/certificates/:id/verify", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
 
-    try {
-      const cert = await storage.verifyCertificate(Number(req.params.id));
-      const updatedUser = await storage.updateUserTokens(cert.userId, cert.tokenValue);
+    const cert = await storage.verifyCertificate(Number(req.params.id));
+    const updatedUser = await storage.updateUserTokens(cert.userId, cert.tokenValue);
 
-      // Update the user session
-      if (req.user.id === updatedUser.id) {
-        req.user.totalTokens = updatedUser.totalTokens;
-      }
-
-      res.json({
-        certificate: cert,
-        user: updatedUser
-      });
-    } catch (error) {
-      console.error('Verification error:', error);
-      res.status(500).json({ error: 'Failed to verify certificate' });
+    // Update the user session with new token count
+    if (req.user.id === updatedUser.id) {
+      req.user.totalTokens = updatedUser.totalTokens;
     }
+
+    res.json({
+      certificate: cert,
+      user: updatedUser
+    });
   });
 
   app.post("/api/certificates/:id/like", async (req, res) => {
