@@ -6,6 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Add request logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -37,33 +38,53 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    log("Starting server initialization...");
+    const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    // Error handling middleware
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      log(`Error: ${err.message}`, "error");
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      res.status(status).json({ message });
+    });
 
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
+    // Temporarily bypass Vite integration to serve static files for faster startup
+    log("Setting up static file serving...");
     serveStatic(app);
-  }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+    // Server configuration
+    const port = 5000;
+    log(`Attempting to start server on port ${port}...`);
+
+    const startupTimeout = setTimeout(() => {
+      log("Server startup timeout exceeded", "error");
+      process.exit(1);
+    }, 10000); // 10 second timeout
+
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      clearTimeout(startupTimeout);
+      log(`Server successfully started and listening on port ${port}`);
+    });
+
+    // Handle server errors
+    server.on("error", (error: any) => {
+      clearTimeout(startupTimeout);
+      if (error.code === "EADDRINUSE") {
+        log(`Port ${port} is already in use`, "error");
+      } else {
+        log(`Server error: ${error.message}`, "error");
+      }
+      process.exit(1);
+    });
+
+  } catch (error) {
+    log(`Failed to start server: ${error instanceof Error ? error.message : String(error)}`, "error");
+    process.exit(1);
+  }
 })();
