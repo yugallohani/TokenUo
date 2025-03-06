@@ -64,10 +64,20 @@ export function setupAuth(app: Express) {
       return res.status(400).send("Username already exists");
     }
 
+    // Get all users to check if this is the first user
+    const allUsers = await storage.getTopUsers(1);
+    const isFirstUser = allUsers.length === 0;
+
     const user = await storage.createUser({
       ...req.body,
       password: await hashPassword(req.body.password),
     });
+
+    // If this is the first user, make them an admin
+    if (isFirstUser) {
+      await storage.makeUserAdmin(user.id);
+      user.isAdmin = true;
+    }
 
     req.login(user, (err) => {
       if (err) return next(err);

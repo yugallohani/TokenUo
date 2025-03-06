@@ -10,6 +10,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserTokens(userId: number, tokens: number): Promise<User>;
   getTopUsers(limit: number): Promise<User[]>;
+  makeUserAdmin(userId: number): Promise<User>;
 
   getCertificates(userId?: number): Promise<Certificate[]>;
   createCertificate(certificate: Omit<Certificate, "id" | "createdAt">): Promise<Certificate>;
@@ -202,6 +203,17 @@ export class MemStorage implements IStorage {
     return Array.from(this.comments.values())
       .filter(comment => comment.certificateId === certificateId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+  async makeUserAdmin(userId: number): Promise<User> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error("User not found");
+
+    const updatedUser = {
+      ...user,
+      isAdmin: true,
+    };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
   }
 }
 
