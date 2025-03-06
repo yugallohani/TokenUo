@@ -153,13 +153,15 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
                 <Badge variant="default" className="bg-yellow-500">
                   Pending Verification
                 </Badge>
-                <Button
-                  size="sm"
-                  onClick={() => verifyMutation.mutate()}
-                  disabled={verifyMutation.isPending}
-                >
-                  Verify Now
-                </Button>
+                {user.isAdmin && (
+                  <Button
+                    size="sm"
+                    onClick={() => verifyMutation.mutate()}
+                    disabled={verifyMutation.isPending}
+                  >
+                    Verify Now
+                  </Button>
+                )}
               </div>
             )}
           </div>

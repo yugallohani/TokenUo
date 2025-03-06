@@ -31,6 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/certificates/:id/verify", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (!req.user.isAdmin) return res.sendStatus(403);
 
     const cert = await storage.verifyCertificate(Number(req.params.id));
     const updatedUser = await storage.updateUserTokens(cert.userId, cert.tokenValue);

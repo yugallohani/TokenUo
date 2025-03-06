@@ -36,6 +36,7 @@ export const users = pgTable("users", {
   avatar: text("avatar"),
   bio: text("bio"),
   totalTokens: integer("total_tokens").default(0).notNull(),
+  isAdmin: boolean("is_admin").default(false).notNull(),
 });
 
 export const certificates = pgTable("certificates", {
