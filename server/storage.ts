@@ -9,6 +9,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUserTokens(userId: number, tokens: number): Promise<User>;
+  updateUserAvatar(userId: number, avatar: string): Promise<User>;
   getTopUsers(limit: number): Promise<User[]>;
   makeUserAdmin(userId: number): Promise<User>;
 
@@ -204,6 +205,18 @@ export class MemStorage implements IStorage {
       .filter(comment => comment.certificateId === certificateId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
+  async updateUserAvatar(userId: number, avatar: string): Promise<User> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error("User not found");
+
+    const updatedUser = {
+      ...user,
+      avatar,
+    };
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+
   async makeUserAdmin(userId: number): Promise<User> {
     const user = await this.getUser(userId);
     if (!user) throw new Error("User not found");
