@@ -33,14 +33,9 @@ Welcome to **TokenUp** – your next-gen platform for seamless token management 
    ```bash
    npm run dev
    ```
-4. **Visit** [http://localhost:5001](http://localhost:5001) in your browser.
 
 ## 🌍 Live Demo
 Check out the deployed app here: [TokenUp Live](https://b2c428e4-f74e-42f8-8106-12ef17806a32-00-3vct8g4ub71m7.worf.replit.dev/)
-
-## 📸 Screenshot
-
-![App Screenshot](screenshot.png)
 
 ## 🤝 Contributing
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
@@ -48,8 +43,6 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## 📄 License
 [MIT](LICENSE)
 
-Your README now looks professional and GitHub-ready, clearly showing off your live app:
-https://b2c428e4-f74e-42f8-8106-12ef17806a32-00-3vct8g4ub71m7.worf.replit.dev/
 
 ---
 
