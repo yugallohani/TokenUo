@@ -25,9 +25,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       userId: req.user.id,
       isVerified: false,
       tokenValue,
-      likesCount: 0,
-      commentsCount: 0,
-      description: data.description || null, // Ensure description is never undefined
     });
     res.status(201).json(cert);
   });
@@ -107,25 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(users);
   });
 
-  // Add a route to make a user an admin (for testing purposes only)
-  app.post("/api/makeAdmin", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
-    try {
-      const updatedUser = await storage.makeUserAdmin(req.user.id);
-      
-      // Update session with admin status
-      req.user.isAdmin = true;
-      
-      res.json(updatedUser);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to set admin status" });
-    }
-  });
-
-  app.get("/api/analytics", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+  app.get("/api/analytics", async (_req, res) => {
     const certificates = await storage.getCertificates();
     const users = await storage.getTopUsers(1000); // Get all users for analytics
 
