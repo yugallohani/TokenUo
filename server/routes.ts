@@ -25,6 +25,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       userId: req.user.id,
       isVerified: false,
       tokenValue,
+      likesCount: 0,
+      commentsCount: 0,
+      description: data.description || null, // Ensure description is never undefined
     });
     res.status(201).json(cert);
   });

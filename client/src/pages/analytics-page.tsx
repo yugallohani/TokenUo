@@ -10,9 +10,12 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  Legend
 } from "recharts";
-import { Loader2 } from "lucide-react";
+import { Loader2, TrendingUp, Award, Medal, Users, FileCheck, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface AnalyticsData {
   certificateTypeDistribution: {
