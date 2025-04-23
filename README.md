@@ -1,8 +1,14 @@
 # 🚀 TokenUp
 
-[![Live Deployment](https://img.shields.io/badge/Live%20App-Online-brightgreen?style=flat-square)](https://b2c428e4-f74e-42f8-8106-12ef17806a32-00-3vct8g4ub71m7.worf.replit.dev/)
+[![Live Deployment](https://img.shields.io/badge/Live%20App-Online-brightgreen?style=flat-square)](https://tokenuo.onrender.com)
 
-![TokenUp Screenshot](screenshot.png)
+## 🖼️ Login Page
+
+![Login Page](screenshot1.png)
+
+## 🖼️ Main App Screenshot
+
+![App Screenshot](screenshot.png)
 
 Welcome to **TokenUp** – your next-gen platform for seamless token management and analytics! This project combines a modern React client, a robust Express/TypeScript backend, and a stylish Tailwind CSS UI to deliver a full-stack experience that's both developer- and user-friendly.
 
@@ -35,14 +41,13 @@ Welcome to **TokenUp** – your next-gen platform for seamless token management 
    ```
 
 ## 🌍 Live Demo
-Check out the deployed app here: [TokenUp Live](https://b2c428e4-f74e-42f8-8106-12ef17806a32-00-3vct8g4ub71m7.worf.replit.dev/)
+Check out the deployed app here: [TokenUp Live](https://tokenuo.onrender.com)
 
 ## 🤝 Contributing
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ## 📄 License
 [MIT](LICENSE)
-
 
 ---
 
