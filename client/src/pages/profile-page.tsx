@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Upload, Camera, Shield, ShieldCheck, Trophy } from "lucide-react";
+import { Loader2, Upload, Camera, Shield, ShieldCheck, Trophy, FileDown } from "lucide-react";
 import ProfileCard from "@/components/profile/profile-card";
 import CertificateCard from "@/components/certificates/certificate-card";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,7 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isCertificateUploading, setIsCertificateUploading] = useState(false);
   const [uploadedCertificateUrl, setUploadedCertificateUrl] = useState("");
+  const [uploadedFileType, setUploadedFileType] = useState<string>("");
   const [adminInfo, setAdminInfo] = useState<{isAdmin: boolean, userId: number, username: string} | null>(null);
 
   // Admin status check
@@ -101,9 +102,10 @@ export default function ProfilePage() {
     },
     onSuccess: (data) => {
       setUploadedCertificateUrl(data.imageUrl);
+      setUploadedFileType(data.fileType || "");
       toast({
         title: "Success",
-        description: "Certificate image uploaded. Now fill in the details.",
+        description: "Certificate file uploaded. Now fill in the details.",
       });
       setIsCertificateUploading(false);
     },
@@ -126,6 +128,8 @@ export default function ProfilePage() {
         imageUrl: uploadedCertificateUrl || formData.get("imageUrl"),
         description: formData.get("description"),
         certificateType: formData.get("certificateType"),
+        fileType: uploadedFileType,
+        isPdf: uploadedFileType === 'application/pdf',
       };
       
       return apiRequest("POST", "/api/certificates", certData);
@@ -137,6 +141,7 @@ export default function ProfilePage() {
         description: "Certificate uploaded successfully",
       });
       setUploadedCertificateUrl("");
+      setUploadedFileType("");
       
       // Reset form
       const form = document.getElementById("certificate-form") as HTMLFormElement;
@@ -290,13 +295,34 @@ export default function ProfilePage() {
                   >
                     {uploadedCertificateUrl ? (
                       <div className="flex flex-col items-center">
-                        <img 
-                          src={uploadedCertificateUrl} 
-                          alt="Uploaded certificate" 
-                          className="w-full max-h-40 object-contain mb-4"
-                        />
+                        {uploadedCertificateUrl.endsWith('.pdf') || 
+                         uploadedFileType === 'application/pdf' ? (
+                          <div className="bg-white rounded-lg shadow-lg p-4 mb-4 w-full max-w-md">
+                            <div className="flex items-center justify-center mb-2">
+                              <FileDown className="h-12 w-12 text-primary" />
+                            </div>
+                            <div className="text-center">
+                              <h4 className="font-semibold">Certificate.pdf</h4>
+                              <p className="text-xs text-muted-foreground mb-1">PDF Document</p>
+                              <a 
+                                href={uploadedCertificateUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-xs text-primary hover:underline"
+                              >
+                                View PDF
+                              </a>
+                            </div>
+                          </div>
+                        ) : (
+                          <img 
+                            src={uploadedCertificateUrl} 
+                            alt="Uploaded certificate" 
+                            className="w-full max-h-40 object-contain mb-4"
+                          />
+                        )}
                         <Button size="sm" variant="outline" className="mt-2" onClick={handleCertificateImageUpload}>
-                          Replace Image
+                          Replace File
                         </Button>
                       </div>
                     ) : (
@@ -306,7 +332,7 @@ export default function ProfilePage() {
                           Click to upload certificate image
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          JPG or PNG format, max 5MB
+                          JPG, PNG, or PDF format, max 5MB
                         </p>
                       </>
                     )}
@@ -315,7 +341,7 @@ export default function ProfilePage() {
                     type="file" 
                     ref={certificateFileInputRef} 
                     className="hidden" 
-                    accept="image/jpeg, image/png" 
+                    accept="image/jpeg, image/png, application/pdf" 
                     onChange={(e) => handleFileChange(e, 'certificate')}
                   />
                   
