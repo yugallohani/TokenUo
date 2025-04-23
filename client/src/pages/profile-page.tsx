@@ -163,20 +163,28 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check if the file is a jpg or png
-    if (!file.type.match(/image\/(jpeg|png)/)) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload a JPG or PNG image",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (type === 'profile') {
+      // Profile photos can only be JPG or PNG
+      if (!file.type.match(/image\/(jpeg|png)/)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a JPG or PNG image for your profile photo",
+          variant: "destructive",
+        });
+        return;
+      }
       setIsUploading(true);
       profilePhotoMutation.mutate(file);
     } else {
+      // Certificates can be JPG, PNG, or PDF
+      if (!file.type.match(/image\/(jpeg|png)/) && file.type !== 'application/pdf') {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a JPG, PNG image, or PDF document",
+          variant: "destructive",
+        });
+        return;
+      }
       setIsCertificateUploading(true);
       certificateImageMutation.mutate(file);
     }

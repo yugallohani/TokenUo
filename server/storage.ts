@@ -100,12 +100,19 @@ export class MemStorage implements IStorage {
 
   async createCertificate(certificate: Omit<Certificate, "id" | "createdAt">): Promise<Certificate> {
     const id = this.currentCertificateId++;
+    
+    // Set default values for new fields if not provided
+    const fileType = certificate.fileType || "image/jpeg";
+    const isPdf = certificate.isPdf || false;
+    
     const newCert: Certificate = {
       ...certificate,
       id,
       createdAt: new Date(),
       likesCount: 0,
       commentsCount: 0,
+      fileType,
+      isPdf
     };
     this.certificates.set(id, newCert);
     return newCert;

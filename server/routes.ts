@@ -63,6 +63,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const data = insertCertificateSchema.parse(req.body);
     const certificateType = data.certificateType as keyof typeof CERTIFICATE_TYPES;
     const tokenValue = CERTIFICATE_TYPES[certificateType].value;
+    
+    // Handle file type information
+    const fileType = req.body.fileType || "image/jpeg";
+    const isPdf = req.body.isPdf || false;
 
     const cert = await storage.createCertificate({
       ...data,
@@ -70,7 +74,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       isVerified: false,
       tokenValue,
       likesCount: 0,
-      commentsCount: 0
+      commentsCount: 0,
+      fileType,
+      isPdf
     });
     res.status(201).json(cert);
   });

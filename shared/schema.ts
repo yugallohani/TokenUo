@@ -85,6 +85,8 @@ export const insertCertificateSchema = createInsertSchema(certificates)
     issuer: true,
     imageUrl: true,
     description: true,
+    fileType: true,
+    isPdf: true,
   })
   .extend({
     certificateType: certificateTypeSchema,

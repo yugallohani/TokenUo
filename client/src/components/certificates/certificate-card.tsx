@@ -233,11 +233,36 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative aspect-video rounded-lg overflow-hidden">
-            <img
-              src={certificate.imageUrl}
-              alt={certificate.title}
-              className="object-cover w-full h-full"
-            />
+            {certificate.isPdf ? (
+              <div className="h-full w-full flex flex-col items-center justify-center bg-muted p-4">
+                <div className="bg-white rounded-lg shadow-lg p-4 mb-2 w-full max-w-md">
+                  <div className="flex items-center justify-center mb-2">
+                    <FileDown className="h-12 w-12 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <h4 className="font-semibold">{certificate.title}.pdf</h4>
+                    <p className="text-xs text-muted-foreground mb-1">PDF Document</p>
+                    <a 
+                      href={certificate.imageUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary hover:underline"
+                    >
+                      View Original PDF
+                    </a>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  This certificate was uploaded as a PDF file
+                </p>
+              </div>
+            ) : (
+              <img
+                src={certificate.imageUrl}
+                alt={certificate.title}
+                className="object-cover w-full h-full"
+              />
+            )}
           </div>
           <div className="space-y-2">
             <h3 className="font-semibold">{certificate.title}</h3>
@@ -249,6 +274,11 @@ export default function CertificateCard({ certificate, user }: CertificateCardPr
               <Badge variant="outline" className="bg-primary/10">
                 {certificateTypeInfo.label} ({certificateTypeInfo.value} tokens)
               </Badge>
+              {certificate.isPdf && (
+                <Badge variant="outline" className="bg-blue-100 text-blue-600 border-blue-200">
+                  PDF Document
+                </Badge>
+              )}
               {certificate.isVerified ? (
                 <Badge variant="default" className="bg-green-600">
                   Verified
