@@ -25,13 +25,13 @@ const imageStorage = multer.diskStorage({
   },
 });
 
-// Only allow jpg and png
+// Allow jpg, png, and pdf files
 const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowedTypes = ["image/jpeg", "image/png"];
+  const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only .jpg and .png formats are allowed"));
+    cb(new Error("Only .jpg, .png, and .pdf formats are allowed"));
   }
 };
 
@@ -75,13 +75,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(201).json(cert);
   });
 
-  // Upload certificate image
+  // Upload certificate file (image or PDF)
   app.post("/api/upload/certificate", upload.single("certificate"), async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     
-    const imageUrl = `/uploads/${req.file.filename}`;
-    res.json({ imageUrl });
+    const fileUrl = `/uploads/${req.file.filename}`;
+    const fileType = req.file.mimetype;
+    const isPdf = fileType === "application/pdf";
+    
+    res.json({ imageUrl: fileUrl, fileType, isPdf });
   });
 
   // Upload profile image

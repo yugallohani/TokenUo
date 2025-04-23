@@ -52,6 +52,8 @@ export const certificates = pgTable("certificates", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   likesCount: integer("likes_count").default(0).notNull(),
   commentsCount: integer("comments_count").default(0).notNull(),
+  fileType: text("file_type").default("image/jpeg"),
+  isPdf: boolean("is_pdf").default(false),
 });
 
 export const likes = pgTable("likes", {
