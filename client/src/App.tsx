@@ -10,9 +10,10 @@ import AuthPage from "@/pages/auth-page";
 import DashboardPage from "@/pages/dashboard-page";
 import ProfilePage from "@/pages/profile-page";
 import LeaderboardPage from "@/pages/leaderboard-page";
+import CoursesPage from "@/pages/courses-page";
 import NotFound from "@/pages/not-found";
 import NavBar from "@/components/layout/nav-bar";
-import AnalyticsPage from "@/pages/analytics-page"; // Added import
+import AnalyticsPage from "@/pages/analytics-page";
 
 function Router() {
   return (
@@ -24,7 +25,8 @@ function Router() {
         <ProtectedRoute path="/dashboard" component={DashboardPage} />
         <ProtectedRoute path="/profile" component={ProfilePage} />
         <ProtectedRoute path="/leaderboard" component={LeaderboardPage} />
-        <ProtectedRoute path="/analytics" component={AnalyticsPage} /> {/* Added route */}
+        <ProtectedRoute path="/courses" component={CoursesPage} />
+        <ProtectedRoute path="/analytics" component={AnalyticsPage} />
         <Route component={NotFound} />
       </Switch>
     </div>
