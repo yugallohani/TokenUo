@@ -104,7 +104,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(users);
   });
 
-  app.get("/api/analytics", async (_req, res) => {
+  // Add a route to make a user an admin (for testing purposes only)
+  app.post("/api/makeAdmin", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    try {
+      const updatedUser = await storage.makeUserAdmin(req.user.id);
+      
+      // Update session with admin status
+      req.user.isAdmin = true;
+      
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to set admin status" });
+    }
+  });
+
+  app.get("/api/analytics", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
     const certificates = await storage.getCertificates();
     const users = await storage.getTopUsers(1000); // Get all users for analytics
 
