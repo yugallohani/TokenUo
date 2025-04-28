@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { insertUserSchema } from "@shared/schema";
@@ -14,8 +15,13 @@ export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
 
+  useEffect(() => {
+    if (user) {
+      setLocation("/");
+    }
+  }, [user, setLocation]);
+
   if (user) {
-    setLocation("/");
     return null;
   }
 
@@ -33,7 +39,6 @@ export default function AuthPage() {
       password: "",
       name: "",
       bio: "",
-      avatar: "",
     },
   });
 
@@ -144,19 +149,6 @@ export default function AuthPage() {
                           <FormLabel>Password</FormLabel>
                           <FormControl>
                             <Input type="password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="avatar"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Avatar URL</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

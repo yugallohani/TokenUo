@@ -5,7 +5,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { setupAuth } from "./auth";
-import { storage } from "./storage";
+import { storage } from "./postgres-storage";
 import { insertCertificateSchema, insertCommentSchema, CERTIFICATE_TYPES } from "@shared/schema";
 
 // Set up multer for file uploads
