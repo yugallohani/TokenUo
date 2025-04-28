@@ -59,7 +59,8 @@ app.use((req, res, next) => {
 
   // ALWAYS serve the app on port 5001
   // this serves both the API and the client
-  const port = 5001;
+  // Use process.env.PORT for compatibility with Render and other platforms
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5001;
   server.listen({
     port,
     host: "0.0.0.0",
