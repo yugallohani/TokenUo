@@ -76,7 +76,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       likesCount: 0,
       commentsCount: 0,
       fileType,
-      isPdf
+      isPdf,
+      description: data.description ?? null
     });
     res.status(201).json(cert);
   });

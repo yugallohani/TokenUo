@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy } from "lucide-react";
 
 export default function AuthPage() {
+  console.log("[AuthPage] render start");
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -20,10 +21,6 @@ export default function AuthPage() {
       setLocation("/");
     }
   }, [user, setLocation]);
-
-  if (user) {
-    return null;
-  }
 
   const loginForm = useForm({
     defaultValues: {
@@ -41,6 +38,11 @@ export default function AuthPage() {
       bio: "",
     },
   });
+
+  if (user) {
+    console.log("[AuthPage] user exists, rendering <div />");
+    return <div />;
+  }
 
   return (
     <div className="min-h-screen grid md:grid-cols-2">

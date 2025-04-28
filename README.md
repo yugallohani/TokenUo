@@ -2,6 +2,8 @@
 
 [![Live Deployment](https://img.shields.io/badge/Live%20App-Online-brightgreen?style=flat-square)](https://tokenuo.onrender.com)
 
+Welcome to **TokenUp** – TokenUp is a student-created platform that enhances learning by rewarding academic and professional achievements through blockchain and AI. It uses AI-based OCR and machine learning algorithms to verify certificates and grants tokens as incentives for verified accomplishments. Users interact through a dynamic dashboard featuring real-time activity feeds, leaderboards, and milestone tracking. Top performers each semester earn extra rewards in the form of digital assets or credentials. By combining blockchain’s security with AI’s verification accuracy, TokenUp offers a transparent, scalable, and gamified solution for education, corporate training, and professional development.
+
 ## 🖼️ Login Page
 
 ![Login Page](screenshot1.png)
@@ -9,8 +11,6 @@
 ## 🖼️ Main App Screenshot
 
 ![App Screenshot](screenshot.png)
-
-Welcome to **TokenUp** – your next-gen platform for seamless token management and analytics! This project combines a modern React client, a robust Express/TypeScript backend, and a stylish Tailwind CSS UI to deliver a full-stack experience that's both developer- and user-friendly.
 
 ---
 
